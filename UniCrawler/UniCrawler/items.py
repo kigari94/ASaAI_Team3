@@ -6,7 +6,7 @@
 import scrapy
 
 
-class PlayingaroundItem(scrapy.Item):
+class UnicrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
