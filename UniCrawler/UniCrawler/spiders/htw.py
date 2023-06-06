@@ -5,10 +5,11 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.item import Item, Field
 
 
-class myItem(Item):
-    stud_url = Field()
-    title = Field()
-    paragraphs = Field()
+# Item zur Ausgabe in der Konsole
+# class myItem(Item):
+#     # stud_url = Field()
+#     # title = Field()
+#     # paragraphs = Field()
 
 
 class HtwSpider(CrawlSpider):
@@ -21,20 +22,14 @@ class HtwSpider(CrawlSpider):
     )
 
     def parse_item(self, response):
-        item = myItem()
-        item["stud_url"] = response.url
-        item["title"] = response.xpath('//title/text()').get()
-        item["paragraphs"] = response.xpath('//p/text()').getall()
-        # url = response.xpath('//td[@id="additional_data"]/@href').get()
-
-        # self.logger.info("This is an item page!", response.url)
-
-        # yield {
-        #     print("ich bin da"),
-        #     print(f"{response.url}")
-        # }
+        # Nur zur Ausgabe in der Console nötig
+        # item = myItem()
+        # item["stud_url"] = response.url
+        # item["title"] = response.xpath('//title/text()').get()
+        # item["paragraphs"] = response.xpath('//p/text()').getall()
         # print(f"{response.url}")
 
+        # writing scraped data into a dict to further progress
         data = dict()
 
         data['stud_url'] = response.url
@@ -47,13 +42,4 @@ class HtwSpider(CrawlSpider):
 
         self.log('saved data to json')
 
-        return item
-
-
-
-        # yield {
-        #     "content": response.css(".intro span::text").get(),
-        #     "content": response.text,
-        #     "url": str(response.url)
-        # }
-        # print(f"url: {response.url}")
+        return print("test")
