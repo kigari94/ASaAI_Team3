@@ -6,6 +6,7 @@ from scrapy.item import Item, Field
 
 
 class myItem(Item):
+    stud_url = Field()
     title = Field()
     paragraphs = Field()
 
@@ -21,6 +22,7 @@ class HtwSpider(CrawlSpider):
 
     def parse_item(self, response):
         item = myItem()
+        item["stud_url"] = response.url
         item["title"] = response.xpath('//title/text()').get()
         item["paragraphs"] = response.xpath('//p/text()').getall()
         # url = response.xpath('//td[@id="additional_data"]/@href').get()
@@ -31,10 +33,11 @@ class HtwSpider(CrawlSpider):
         #     print("ich bin da"),
         #     print(f"{response.url}")
         # }
-        print(f"{response.url}")
+        # print(f"{response.url}")
 
         data = dict()
 
+        data['stud_url'] = response.url
         data['title'] = response.xpath('//title/text()').get()
         data['paragraphs'] = response.xpath('//p/text()').getall()
 
