@@ -37,9 +37,12 @@ class HtwSpider(CrawlSpider):
         data['paragraphs'] = response.xpath('//p/text()').getall()
 
         # write data to json file
-        with open('output.json', 'a') as f:
+        with open('htwoutput.json', 'a') as f:
             json.dump(data, f)
 
         self.log('saved data to json')
 
-        return print("test")
+        return print("saved a page")
+
+
+
