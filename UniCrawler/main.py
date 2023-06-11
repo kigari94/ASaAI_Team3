@@ -1,21 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from UniCrawler.spiders import htw
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from UniCrawler.spiders import haw, htw, htwk
+
 
 def main():
     """ Main program """
     # Code goes over here.
-    # cspider = crawling_spider.CrawlingSpider()
-
     process = CrawlerProcess(get_project_settings())
 
-    process.crawl(htw.HtwSpider)
+    htwkSpider = htwk.HtwkSpider
+    htwSpider = htw.HtwSpider
+
+    #process.crawl(haw.CrawlingSpider)
+    process.crawl(htwSpider)
+    process.crawl(htwkSpider)
     process.start()
 
+
+    htwSpider.write_json(htwSpider)
+    htwkSpider.write_json(htwkSpider)
+
     return 0
+
 
 if __name__ == "__main__":
 
