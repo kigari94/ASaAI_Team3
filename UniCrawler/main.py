@@ -4,6 +4,7 @@
 from UniCrawler.spiders import htw
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from UniCrawler.spiders import htwk
 
 def main():
     """ Main program """
