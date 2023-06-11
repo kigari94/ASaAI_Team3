@@ -26,6 +26,12 @@ Laden des json Files. Zukünftig müssen wir aber unbedingt nur die Spalten mit 
 sonst sind die URLs und alles andere Weg, was zur Idenfitikation wichtig sein könnte.
 Mit dem Encoding wirft er auch keinen Fehler weil irgendein Deutsches Zeichen ihn rausschmeißt.
 '''
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('averaged_perceptron_tagger')
+
 try:
     with open('test.json', 'r',  encoding="utf8") as file:
         data = json.load(file)
