@@ -12,12 +12,15 @@ def main():
     process = CrawlerProcess(get_project_settings())
 
     htwkSpider = htwk.HtwkSpider
+    htwSpider = htw.HtwSpider
 
     #process.crawl(haw.CrawlingSpider)
-    process.crawl(htw.HtwSpider)
+    process.crawl(htwSpider)
     process.crawl(htwkSpider)
     process.start()
 
+
+    htwSpider.write_json(htwSpider)
     htwkSpider.write_json(htwkSpider)
 
     return 0

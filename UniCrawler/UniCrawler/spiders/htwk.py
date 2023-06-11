@@ -5,13 +5,6 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.item import Item, Field
 
 
-# Item zur Ausgabe in der Konsole
-# class myItem(Item):
-#     # stud_url = Field()
-#     # title = Field()
-#     # paragraphs = Field()
-
-
 class HtwkSpider(CrawlSpider):
     name = "htwk"
     allowed_domains = ["htwk-leipzig.de"]
@@ -24,12 +17,6 @@ class HtwkSpider(CrawlSpider):
     content = list()
 
     def parse_item(self, response):
-        # Nur zur Ausgabe in der Console nötig
-        # item = myItem()
-        # item["stud_url"] = response.url
-        # item["title"] = response.xpath('//title/text()').get()
-        # item["paragraphs"] = response.xpath('//p/text()').getall()
-        # print(f"{response.url}")
 
         # writing scraped data into a dict to further progress
         data = dict()
@@ -40,13 +27,7 @@ class HtwkSpider(CrawlSpider):
 
         self.add_item_to_list(data)
 
-        # write data to json file
-        # with open('htwkoutput.json', 'a') as f:
-        #     json.dump(data, f)
-        #
-        # self.log('saved data to json')
-        #
-        return print("saved a page")
+        return None
 
     def add_item_to_list(self, item):
         self.content.append(item)
@@ -54,8 +35,6 @@ class HtwkSpider(CrawlSpider):
     def write_json(self):
         with open('htwkoutput.json', 'a') as f:
             json.dump(self.content, f)
-
-        # self.log('saved data to json')
 
 
 
