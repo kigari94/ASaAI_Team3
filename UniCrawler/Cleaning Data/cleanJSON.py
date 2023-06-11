@@ -1,5 +1,5 @@
 # Python program to READ and CLEAN
-# JSON file
+# JSON file - creates a new file to keep raw data
 
 import json
 import re
@@ -27,6 +27,7 @@ if type(data) is list:
             helpList = list()
             helpDict = dict()
             for e in i['paragraphs']:
+                #List comprehension wär vielleicht schöner also das e.strip but what do I know
                 helpList.append(e.strip())
             text = re.sub(r'[^\w\s]|[\d]', '', str(helpList))
 
