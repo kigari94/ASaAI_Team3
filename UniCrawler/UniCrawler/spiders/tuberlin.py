@@ -5,13 +5,13 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.item import Item, Field
 
 
-class HtwSpider(CrawlSpider):
-    name = "htw"
-    allowed_domains = ["htw-dresden.de"]
-    start_urls = ["https://www.htw-dresden.de"]
+class TuBerlinSpider(CrawlSpider):
+    name = "tuberlin"
+    allowed_domains = ["tu.berlin"]
+    start_urls = ["https://www.tu.berlin"]
 
     rules = (
-        Rule(LinkExtractor(allow="studium/vor-dem-studium/studienangebot"), callback="parse_item", follow=True),
+        Rule(LinkExtractor(allow="studieren/studienangebot/gesamtes-studienangebot"), callback="parse_item", follow=True),
     )
 
     content = list()
@@ -33,7 +33,7 @@ class HtwSpider(CrawlSpider):
         self.content.append(item)
 
     def write_json(self):
-        with open('htwoutput.json', 'w') as f:
+        with open('tuberlin.json', 'w') as f:
             json.dump(self.content, f)
 
 
