@@ -21,13 +21,9 @@ class HtwSpider(CrawlSpider):
         Rule(LinkExtractor(allow="studium/vor-dem-studium/studienangebot"), callback="parse_item", follow=True),
     )
 
+
+
     def parse_item(self, response):
-        # Nur zur Ausgabe in der Console nötig
-        # item = myItem()
-        # item["stud_url"] = response.url
-        # item["title"] = response.xpath('//title/text()').get()
-        # item["paragraphs"] = response.xpath('//p/text()').getall()
-        # print(f"{response.url}")
 
         # writing scraped data into a dict to further progress
         data = dict()

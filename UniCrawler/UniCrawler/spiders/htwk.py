@@ -21,6 +21,8 @@ class HtwkSpider(CrawlSpider):
         Rule(LinkExtractor(allow="studieren/studiengaenge"), callback="parse_item", follow=True),
     )
 
+    content = list()
+
     def parse_item(self, response):
         # Nur zur Ausgabe in der Console nötig
         # item = myItem()
@@ -36,10 +38,24 @@ class HtwkSpider(CrawlSpider):
         data['title'] = response.xpath('//title/text()').get()
         data['paragraphs'] = response.xpath('//p/text()').getall()
 
+        self.add_item_to_list(data)
+
         # write data to json file
-        with open('htwkoutput.json', 'a') as f:
-            json.dump(data, f)
-
-        self.log('saved data to json')
-
+        # with open('htwkoutput.json', 'a') as f:
+        #     json.dump(data, f)
+        #
+        # self.log('saved data to json')
+        #
         return print("saved a page")
+
+    def add_item_to_list(self, item):
+        self.content.append(item)
+
+    def write_json(self):
+        with open('htwkoutput.json', 'a') as f:
+            json.dump(self.content, f)
+
+        # self.log('saved data to json')
+
+
+
