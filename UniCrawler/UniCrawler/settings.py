@@ -12,6 +12,9 @@ BOT_NAME = "UniCrawler"
 SPIDER_MODULES = ["UniCrawler.spiders"]
 NEWSPIDER_MODULE = "UniCrawler.spiders"
 
+FEEDS = {
+    'data_global.json': {'format': 'json'}
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0"
