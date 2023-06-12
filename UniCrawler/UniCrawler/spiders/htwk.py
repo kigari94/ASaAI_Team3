@@ -33,7 +33,7 @@ class HtwkSpider(CrawlSpider):
         self.content.append(item)
 
     def write_json(self):
-        with open('htwkoutput.json', 'a') as f:
+        with open('htwkoutput.json', 'w') as f:
             json.dump(self.content, f)
 
 
