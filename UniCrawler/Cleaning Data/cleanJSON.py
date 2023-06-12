@@ -3,6 +3,10 @@
 
 import json
 import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import *
 
 # open JSON file
 
@@ -27,15 +31,55 @@ if type(data) is list:
             helpList = list()
             helpDict = dict()
             for e in i['paragraphs']:
-                #List comprehension wär vielleicht schöner also das e.strip but what do I know
+                # List comprehension wär vielleicht schöner also das e.strip but what do I know
+                # .strip() um whitespace zu entfernen
                 helpList.append(e.strip())
+
+            # RegEX das weiter aufräumt
             text = re.sub(r'[^\w\s]|[\d]', '', str(helpList))
 
-# hier weiter aufräumen
+            # # einmaliges Ausführen
+            # nltk.download('punkt')
+            # nltk.download('stopwords')
+            # nltk.download('wordnet')
+            # nltk.download('omw-1.4')
+            # nltk.download('averaged_perceptron_tagger')
+
+            # trainiertes nltk wordtokenize, macht aus Sätzen Wörter und mit schreibt sie klein
+            lowercase_tokens = [token.lower() for token in word_tokenize(text, language='german')]
+
+            # StopWords sind Füllwörter
+            stop_words = set(stopwords.words("german"))
+
+            # Liste mit weiteren Wörtern die rausgefiltert werden
+            additional_words = ['innen', 'bitte', 'xa', 'prof', 'pdf', 'z', 'b', 'haw', 'oft', 'per', 'sowie', 'etc',
+                                'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
+                                'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
+                                'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische', 'ausländischer', 'hzb',
+                                'zumxabewerbungsverfahren',
+                                'or', 'a', 'of', 'about', 'the', 'on', 'our', ]
+            stop_words.update(additional_words)
+
+            # legt neue Liste an mit gefilterten Wörtern
+            try:
+                filtered_tokens = [token for token in lowercase_tokens if token not in stop_words]
+                #print(filtered_tokens)
+            except Exception as e:
+                print(f"Fehlermeldung: {e}")
+
+            # reduziert Worte auf deutsche Wortstämme
+            stemmer = SnowballStemmer("german")
+            stemmed_words = []
+
+            for w in filtered_tokens:
+                stemmed_words.append(stemmer.stem(w))
+            #print(stemmed_words)
+
+            # ab her eventuell weitere Reinigung vornehmen
 
             helpDict['stud_url'] = i['stud_url']
             helpDict['title'] = i['title']
-            helpDict['paragraphs'] = text
+            helpDict['paragraphs'] = stemmed_words
 
             content.append(helpDict)
 
@@ -46,3 +90,4 @@ else:
 
 with open(outputFile, 'w') as f:
     json.dump(content, f)
+    print(f"JSON Datei {outputFile} erfolgreich erstellt")
