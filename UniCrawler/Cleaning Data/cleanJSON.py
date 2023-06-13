@@ -3,13 +3,11 @@
 
 import json
 import re
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import *
 
 # open JSON file
-
 fname = "../htwoutput.json"
 content = list()
 outputFile = "htw_clean.json"
@@ -37,6 +35,7 @@ if type(data) is list:
 
             # RegEX das weiter aufräumt
             text = re.sub(r'[^\w\s]|[\d]', '', str(helpList))
+            #print(text)
 
             # # einmaliges Ausführen
             # nltk.download('punkt')
@@ -56,14 +55,14 @@ if type(data) is list:
                                 'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
                                 'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
                                 'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische', 'ausländischer', 'hzb',
-                                'zumxabewerbungsverfahren',
+                                'zumxabewerbungsverfahren', 'frist',
                                 'or', 'a', 'of', 'about', 'the', 'on', 'our', ]
             stop_words.update(additional_words)
 
             # legt neue Liste an mit gefilterten Wörtern
             try:
                 filtered_tokens = [token for token in lowercase_tokens if token not in stop_words]
-                #print(filtered_tokens)
+                #print(f"FILTERED {filtered_tokens}")
             except Exception as e:
                 print(f"Fehlermeldung: {e}")
 
@@ -73,7 +72,7 @@ if type(data) is list:
 
             for w in filtered_tokens:
                 stemmed_words.append(stemmer.stem(w))
-            #print(stemmed_words)
+            #print(f"STEMMED {stemmed_words}")
 
             # ab her eventuell weitere Reinigung vornehmen
 
