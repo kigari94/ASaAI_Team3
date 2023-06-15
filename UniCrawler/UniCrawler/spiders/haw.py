@@ -22,8 +22,8 @@ class CrawlingSpider(scrapy.Spider):
     def parse_courses(self, response):
         # Extract required data from each course
         yield {
-            'name': response.meta.get('name'),
-            'url': response.meta.get('url'),
+            'stud_url': response.meta.get('url'),
+            'title': response.meta.get('name'),
             'paragraphs': response.css('p::text').getall(),
             # 'intro': response.css('span.intro::text').get(),
             # 'content': response.css('div.card-body.black p::text').getall(),
