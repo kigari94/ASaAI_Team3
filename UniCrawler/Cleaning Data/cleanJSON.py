@@ -55,14 +55,23 @@ if type(data) is list:
                                 'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
                                 'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
                                 'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische', 'ausländischer', 'hzb',
-                                'zumxabewerbungsverfahren', 'frist',
-                                'or', 'a', 'of', 'about', 'the', 'on', 'our', ]
+                                'zumxabewerbungsverfahren', 'frist', 'montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
+                                'studienbewerber', 'sächsisches', 'landesamt', 'semester', 'bewerbung', 'müssen', 'zeugnis', 'studium',
+                                'anerkennen', 'lassen', 'finden', 'voraussetzungen', 'begonnen', 'weiteren', 'gern', 'komplexen',
+                                'verfügen', 'entsprechenden', 'stelle', 'wohnort', 'rubrik', 'formgerecht', 'uniassist', 'ev', 'richten', 'erfüllung', 'allgemeinen', 'zulassungsvoraussetzungen', 'prüft',
+                                'nutzung', 'youtube', 'betreiber', 'usan', 'übertragen', 'umständen',  'youtubevideos', 'abspielen', 'angeboten', 'benötigen', 'zulassung', 'neben',
+                                'regel', 'nachzuweisen', 'hochschulzugangsberechtigung', 'hochschulabschluss', 'sprache', 'nachweis', 'sprachlichen', 'studierfähigkeit', 'befreit', 'nähere',
+                                'deutschsprachigen', 'studiengangs', 'dh', 'xain', 'bewerbern', 'gleichgestellt', 'befolgen', 'sprechzeit', 'information', 'studiengang', 'but', 'please', 'use', 'translator', 'for', 'translated', 'version',
+                                'möchten', 'bitten', 'anliegen', 'vorrangig', 'via', 'e', 'mail', 'telefonisch', 'stehen', 'weitere', 'familienbetriebegroß', 'unternehmen',
+                                'persönliche', 'beratungsgespräche', 'weiteres', 'vorheriger', 'terminvereinbarung', 'weitere', 'dokumente', 'antragsformulare',  'informationen', 'link', 'aktualisiert', 'friedrichlistplatz', 'dresden'
+                                'statt', 'aktuelle', 'sprechzeiten', 'studienfachberatung', 'absolviert', 'somit', 'parallel', 'berufsabschluss', 'bereiten', 'späteren', 'beruflichen', 'einsatz', 'einemxaweitgefächerten', 'arbeitsmarkt',
+                                'or', 'a', 'of', 'about', 'the', 'on', 'our', 'undxader', 'einzelnen', 'ebba']
             stop_words.update(additional_words)
 
             # legt neue Liste an mit gefilterten Wörtern
             try:
                 filtered_tokens = [token for token in lowercase_tokens if token not in stop_words]
-                #print(f"FILTERED {filtered_tokens}")
+                print(f"FILTERED {filtered_tokens}")
             except Exception as e:
                 print(f"Fehlermeldung: {e}")
 
