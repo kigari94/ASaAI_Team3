@@ -34,7 +34,7 @@ class UlSpider(CrawlSpider):
         self.content.append(item)
 
     def write_json(self):
-        with open('uloutput.json', 'w') as f:
+        with open('Resources/uloutput.json', 'w') as f:
             json.dump(self.content, f)
 
 

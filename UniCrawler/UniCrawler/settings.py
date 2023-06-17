@@ -13,7 +13,7 @@ SPIDER_MODULES = ["UniCrawler.spiders"]
 NEWSPIDER_MODULE = "UniCrawler.spiders"
 
 FEEDS = {
-    'data_global.json': {'format': 'json'}
+    'Resources/data_global.json': {'format': 'json'}
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

@@ -2,100 +2,171 @@
 # JSON file - creates a new file to keep raw data
 
 import json
+import os
 import re
+import spacy
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import *
 
-# open JSON file
-fname = "../htwoutput.json"
+# # einmaliges Ausführen
+# nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+# nltk.download('averaged_perceptron_tagger')
+
+# vorher via Konsole: spacy download de_core_news_sm
+# Laden deutschen Sprachmodells von Spacy
+nlp = spacy.load("de_core_news_sm")
+
 content = list()
-outputFile = "htw_clean.json"
 
-try:
-    with open(fname) as f:
-        data = json.load(f)
+def clean_string(input):
+    if input is not None:
+        input = input.strip()
+        text = re.sub(r'[^\w\s]|[\d]', '', str(input))
+        lowercase_tokens = [token.lower() for token in word_tokenize(text, language='german')]
+        return lowercase_tokens
+    else:
+        return ''
 
-except Exception as e:
-    print(f"beim Öffnen von {fname} ist ein Fehler aufgetreten")
-    print(f"Fehlermeldung: {e}")
 
-# prüfen ob eingegebene Datei eine Liste ist
-if type(data) is list:
-    print(f"{fname} entspricht dem richtigen Typ")
+def clean_json(fname):
+    # open file
+    try:
+        with open(fname) as f:
+            data = json.load(f)
 
-    for i in data:
-        if type(i) is dict:
-            helpList = list()
-            helpDict = dict()
-            for e in i['paragraphs']:
-                # List comprehension wär vielleicht schöner also das e.strip but what do I know
-                # .strip() um whitespace zu entfernen
-                helpList.append(e.strip())
+    except Exception as e:
+        print(f"beim Öffnen von {fname} ist ein Fehler aufgetreten")
+        print(f"Fehlermeldung: {e}")
 
-            # RegEX das weiter aufräumt
-            text = re.sub(r'[^\w\s]|[\d]', '', str(helpList))
-            #print(text)
+    # check json format
+    if type(data) is list:
+        print(f"{fname} entspricht dem richtigen JSON Format")
 
-            # # einmaliges Ausführen
-            # nltk.download('punkt')
-            # nltk.download('stopwords')
-            # nltk.download('wordnet')
-            # nltk.download('omw-1.4')
-            # nltk.download('averaged_perceptron_tagger')
+        for i in data:
+            # if type(i) is dict:
+            if isinstance(i, dict):
+                helpList = list()
+                helpDict = dict()
+                for e in i['paragraphs']:
+                    # List comprehension wär vielleicht schöner also das e.strip but what do I know
+                    # .strip() um whitespace zu entfernen
+                    helpList.append(e.strip())
 
-            # trainiertes nltk wordtokenize, macht aus Sätzen Wörter und mit schreibt sie klein
-            lowercase_tokens = [token.lower() for token in word_tokenize(text, language='german')]
+                # RegEX das weiter aufräumt
+                text = re.sub(r'[^\w\s]|[\d]', '', str(helpList))
+                # print(text)
 
-            # StopWords sind Füllwörter
-            stop_words = set(stopwords.words("german"))
+                # trainiertes nltk wordtokenize, macht aus Sätzen Wörter und mit schreibt sie klein
+                lowercase_tokens = [token.lower() for token in word_tokenize(text, language='german')]
 
-            # Liste mit weiteren Wörtern die rausgefiltert werden
-            additional_words = ['innen', 'bitte', 'xa', 'prof', 'pdf', 'z', 'b', 'haw', 'oft', 'per', 'sowie', 'etc',
-                                'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
-                                'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
-                                'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische', 'ausländischer', 'hzb',
-                                'zumxabewerbungsverfahren', 'frist', 'montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag',
-                                'studienbewerber', 'sächsisches', 'landesamt', 'semester', 'bewerbung', 'müssen', 'zeugnis', 'studium',
-                                'anerkennen', 'lassen', 'finden', 'voraussetzungen', 'begonnen', 'weiteren', 'gern', 'komplexen',
-                                'verfügen', 'entsprechenden', 'stelle', 'wohnort', 'rubrik', 'formgerecht', 'uniassist', 'ev', 'richten', 'erfüllung', 'allgemeinen', 'zulassungsvoraussetzungen', 'prüft',
-                                'nutzung', 'youtube', 'betreiber', 'usan', 'übertragen', 'umständen',  'youtubevideos', 'abspielen', 'angeboten', 'benötigen', 'zulassung', 'neben',
-                                'regel', 'nachzuweisen', 'hochschulzugangsberechtigung', 'hochschulabschluss', 'sprache', 'nachweis', 'sprachlichen', 'studierfähigkeit', 'befreit', 'nähere',
-                                'deutschsprachigen', 'studiengangs', 'dh', 'xain', 'bewerbern', 'gleichgestellt', 'befolgen', 'sprechzeit', 'information', 'studiengang', 'but', 'please', 'use', 'translator', 'for', 'translated', 'version',
-                                'möchten', 'bitten', 'anliegen', 'vorrangig', 'via', 'e', 'mail', 'telefonisch', 'stehen', 'weitere', 'familienbetriebegroß', 'unternehmen',
-                                'persönliche', 'beratungsgespräche', 'weiteres', 'vorheriger', 'terminvereinbarung', 'weitere', 'dokumente', 'antragsformulare',  'informationen', 'link', 'aktualisiert', 'friedrichlistplatz', 'dresden'
-                                'statt', 'aktuelle', 'sprechzeiten', 'studienfachberatung', 'absolviert', 'somit', 'parallel', 'berufsabschluss', 'bereiten', 'späteren', 'beruflichen', 'einsatz', 'einemxaweitgefächerten', 'arbeitsmarkt',
-                                'or', 'a', 'of', 'about', 'the', 'on', 'our', 'undxader', 'einzelnen', 'ebba']
-            stop_words.update(additional_words)
+                # clear title
+                something = clean_string(i['title'])
+                # print(f"Clean title: {something}")
 
-            # legt neue Liste an mit gefilterten Wörtern
-            try:
-                filtered_tokens = [token for token in lowercase_tokens if token not in stop_words]
-                print(f"FILTERED {filtered_tokens}")
-            except Exception as e:
-                print(f"Fehlermeldung: {e}")
+                # StopWords sind Füllwörter
+                stop_words = set(stopwords.words("german"))
 
-            # reduziert Worte auf deutsche Wortstämme
-            stemmer = SnowballStemmer("german")
-            stemmed_words = []
+                # Liste mit weiteren Wörtern die rausgefiltert werden
+                additional_words = ['innen', 'bitte', 'xa', 'prof', 'pdf', 'z', 'b', 'haw', 'oft', 'per', 'sowie',
+                                    'etc',
+                                    'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
+                                    'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
+                                    'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische',
+                                    'ausländischer', 'hzb', 'freitag', 'komplexen', 'zeugnis', 'studium',
+                                    'zwischenxaden', 'studiengangsleitung', 'besuchen',
+                                    'zumxabewerbungsverfahren', 'frist', 'montag', 'dienstag', 'mittwoch', 'donnerstag',
+                                    'studienbewerber', 'sächsisches', 'landesamt', 'semester', 'bewerbung', 'müssen',
+                                    'anerkennen', 'lassen', 'finden', 'voraussetzungen', 'begonnen', 'weiteren', 'gern',
+                                    'verfügen', 'entsprechenden', 'stelle', 'wohnort', 'rubrik', 'formgerecht',
+                                    'uniassist',
+                                    'ev', 'richten', 'erfüllung', 'allgemeinen', 'zulassungsvoraussetzungen', 'prüft',
+                                    'nutzung', 'youtube', 'betreiber', 'usan', 'übertragen', 'umständen',
+                                    'youtubevideos',
+                                    'abspielen', 'angeboten', 'benötigen', 'zulassung', 'neben', 'friedrichlistplatz',
+                                    'regel', 'nachzuweisen', 'hochschulzugangsberechtigung', 'hochschulabschluss',
+                                    'sprache', 'nachweis', 'sprachlichen', 'studierfähigkeit', 'befreit', 'nähere',
+                                    'deutschsprachigen', 'studiengangs', 'dh', 'xain', 'bewerbern', 'gleichgestellt',
+                                    'befolgen', 'sprechzeit', 'information', 'studiengang', 'but', 'please', 'use',
+                                    'translator', 'for', 'translated', 'version', 'wesentlichexakenntnisse',
+                                    'xaökonomie',
+                                    'möchten', 'bitten', 'anliegen', 'vorrangig', 'via', 'e', 'mail', 'telefonisch',
+                                    'stehen', 'weitere', 'familienbetriebegroß', 'unternehmen', 'dresden', 'alltag',
+                                    'persönliche', 'beratungsgespräche', 'weiteres', 'vorheriger', 'terminvereinbarung',
+                                    'weitere', 'dokumente', 'antragsformulare', 'informationen', 'link', 'aktualisiert',
+                                    'statt', 'aktuelle', 'sprechzeiten', 'studienfachberatung', 'selbststudium',
+                                    'email',
+                                    'studieren', 'zuxaplanen', 'gelerntes', 'vorlesung', 'sämtlicher', 'sämtliche',
+                                    'absolviert', 'somit', 'parallel', 'berufsabschluss', 'bereiten', 'späteren',
+                                    'beruflichen', 'einsatz', 'einemxaweitgefächerten', 'arbeitsmarkt', 'methodenxader',
+                                    'or', 'a', 'of', 'about', 'the', 'on', 'our', 'undxader', 'einzelnen', 'ebba',
+                                    'wintersemester', 'pillnitz', 'achelor', 'ihrxaproduktionstechnisches', 'and',
+                                    'ermöglichenxaihnen', 'beiden', 'studienrichtungen', 'drei',
+                                    'studiengangssekretariat',
+                                    'entscheidungenxain', 'dasxaerkennen', 'zuxaplane', 'campus']
+                stop_words.update(additional_words)
 
-            for w in filtered_tokens:
-                stemmed_words.append(stemmer.stem(w))
-            #print(f"STEMMED {stemmed_words}")
+                # legt neue Liste an mit gefilterten Wörtern
+                try:
+                    filtered_tokens = [token for token in lowercase_tokens if token not in stop_words]
+                    # print(f"FILTERED {filtered_tokens}")
+                except Exception as e:
+                    print(f"Fehlermeldung: {e}")
 
-            # ab her eventuell weitere Reinigung vornehmen
+                combined_string = ' '.join(filtered_tokens)
+                doc = nlp(combined_string)
+                # print(combined_string)
 
-            helpDict['stud_url'] = i['stud_url']
-            helpDict['title'] = i['title']
-            helpDict['paragraphs'] = stemmed_words
+                # entferne Adverben, Determinante, ADP und Pronomen
+                removable_tags = ['ADV', 'DET', 'ADP', 'PRON']
+                filtered_token = [token.text for token in doc if token.pos_ not in removable_tags]
+                # print(filtered_token)
 
-            content.append(helpDict)
+                filtered_string = ' '.join(filtered_tokens)
+                filtered_doc = nlp(filtered_string)
 
-        else:
-            print("Listenelemet ist kein Dict")
-else:
-    print(f"{fname} ist keine Liste.")
+                tokens = list()
+                for chunk in filtered_doc.noun_chunks:
+                    tokens.append(chunk.text)
 
-with open(outputFile, 'w') as f:
-    json.dump(content, f)
-    print(f"JSON Datei {outputFile} erfolgreich erstellt")
+                tokens.append(' '.join(something))
+                # print(tokens)
+
+                helpDict['stud_url'] = i['stud_url']
+                helpDict['title'] = i['title']
+                helpDict['paragraphs'] = tokens
+
+                content.append(helpDict)
+
+            else:
+                print(f"Listenelement ist kein Dict: {type(i)}")
+    else:
+        print(f"{fname} ist keine gültige JSON.")
+
+    if content is not None:
+        write_json("../Resources/Cleaned/" + os.path.basename(fname).split(".")[0] + "_cleaned.json")
+    else:
+        print(f"Content is empty, something went wrong with: {fname}")
+
+
+def write_json(fname):
+    with open(fname, 'w') as f:
+        json.dump(content, f)
+        print(f"JSON Datei {fname} erfolgreich erstellt")
+
+
+# theoretisch als funktion
+
+for root, dirs, files in os.walk('../Resources'):
+    if root == "../Resources":
+        for file in files:
+            # check for json file
+            if (file.endswith('.json')):
+                fname = root + '/' + file
+                clean_json(fname)
+            else:
+                print(f"{file} has no json extension.")
+    print("finished, no more json files")

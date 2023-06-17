@@ -1,40 +1,87 @@
 from gensim import corpora
 from gensim.models import LdaModel
 from gensim.utils import simple_preprocess
+import json
+import re
+import spacy
 
-## ist noch 100% kein fertiges Programm aber ich wollte bloß gucken ob es geht aber ich werd da wohl noch was schreiben
+import os
+import json
+
+content = list()
 
 
-# die Inhalte kommen aus der Konsolenausgabe der cleanJSON.py in der ich mir die getokenized Wörter mit der immer wieder angepassten Stopword Liste habe ausgeben lassen um so Stück für Stück weitere Stopwords zu identifizieren
-# Maschinenbau glaube
-texts = ['bachelor', 'vollzeit', 'teilzeit', 'wintersemester', 'bildung', 'fachlichen', 'erforderlichen', 'kenntnisse',
-         'wintersemester', 'instruktionen', 'absolventin', 'maschinenbaus', 'breit', 'gefächertes', 'grundlagenwissen',
-         'praxisorientierte', 'fertigkeiten', 'tätigkeiten', 'bereichen', 'maschinenwesens', 'qualifiziert', 'darüber',
-         'hinaus', 'gutachterwesen', 'eingesetzt', 'fachkenntnisse', 'werkstoffe', 'einzelne', 'bauteile', 'deren',
-         'hochkomplexen', 'maschinensystemen', 'zudem', 'kennen', 'verschiedenste', 'herstellungsverfahren',
-         'wirkzusammenhänge', 'steuerungs', 'messtechniken', 'lage', 'technische', 'problemlösungen', 'befähigt',
-         'entwicklung', 'berechnung', 'auslegung', 'konstruktion', 'maschinen', 'technischen', 'anlagen',
-         'maschinenbaustudium', 'bildet', 'grundlage', 'viele', 'herausforderungen', 'hineinzudenken', 'lösungswege',
-         'aufzubauen', 'umfassend', 'vorbereitet', 'generalistisches', 'wissen', 'unterschiedlichste',
-         'tätigkeitsgebiete', 'grundlagenwissen', 'mathematik', 'physik', 'werkstofftechnik', 'studienkompetenzen',
-         'vertiefendes', 'fachwissen', 'wahl', 'studienrichtung', 'konstruktion', 'fahrzeugtechnik', 'nachhaltige',
-         'fertigung', 'management', 'wöchiges', 'betriebspraktikum', 'abschlussarbeit', 'statt', 'internationale',
-         'studienberatung', 'vereinbarung', 'dresden']
+def apply_lda(fname):
+    # open file
+    try:
+        with open(fname) as f:
+            data = json.load(f)
 
-# Agrarsonstwas
-#  ['bachelor', 'vollzeit', 'wintersemester', 'bildung', 'fachlichen', 'erforderlichen', 'kenntnisse', 'wintersemester', 'instruktionen', 'wesentlichexakenntnisse', 'kernfächern', 'agrarwirtschaft', 'xaökonomie', 'tierproduktion', 'pflanzenproduktion', 'landtechnik', 'betriebswirtschaft', 'kenntnisse', 'anwendungsorientiert', 'vermittelt', 'ermöglichenxaihnen', 'landwirtschaftlichen', 'betrieb', 'entscheidungenxain', 'produktionstechnik', 'verfahrensabläufen', 'betriebswirtschaft', 'vorzubereiten', 'treffen', 'außerdem', 'befähigt', 'betriebe', 'verfahren', 'zuxaplanen', 'bewerten', 'besonders', 'wichtig', 'dasxaerkennen', 'analyse', 'schnittstellen', 'zwischenxaden', 'wissensgebieten', 'deshalb', 'ihrxaproduktionstechnisches', 'wissen', 'ökonomischen', 'rahmenbedingungen', 'betriebswirtschaftlichen', 'methodenxader', 'entscheidungsfindung', 'verknüpfen', 'ausbildungsziele', 'lernen', 'alltag', 'landwirtschaftlichen', 'betriebes', 'gehört', 'bieten', 'campus', 'pillnitz', 'mitten', 'grünen', 'praxiserfahrung', 'lehrenden', 'ideale', 'vermittelten', 'vielfältigen', 'wissen', 'unterschiedlichsten', 'wege', 'berufsleben', 'offen', 'praxisorientiertes', 'grundlagenwissen', 'kerngebieten', 'agrarwirtschaft', 'drei', 'pflichtmodule', 'anschließendem', 'wöchigen', 'praktikum', 'anerkannten', 'ausbildungsbetrieb', 'anwendungsorientierte', 'fachkenntnisse', 'pflicht', 'wahlpflichtmodulen', 'planungsprojekte', 'wöchige', 'abschlussarbeit', 'präsenzmodule', 'rahmen', 'projektes', 'rwerb', 'erufsabschlusses', 'achelor', 'grarwirtschaft', 'landwirtin', 'erworben', 'praxisnähe', 'leitung', 'landw', 'handel', 'vertrieb', 'landw', 'produktionsmittel', 'beratung', 'landw', 'tätigkeit', 'landw', 'versuchswesen', 'statt', 'vereinbarung', 'internationale', 'studienberatung', 'vereinbarung', 'dresden']
+    except Exception as e:
+        print(f"beim Öffnen von {fname} ist ein Fehler aufgetreten")
+        print(f"Fehlermeldung: {e}")
 
-# Tokenisierung und Vorbereitung vom Text
-processed_texts = [simple_preprocess(text) for text in texts]
-dictionary = corpora.Dictionary(processed_texts)
-corpus = [dictionary.doc2bow(text) for text in processed_texts]
+    # check json format
+    if type(data) is list:
+        print(f"{fname} entspricht dem richtigen JSON Format")
 
-# Training des LDA-Modells
-# Anzahl topics = 5 passes=10 also es ghet 10 Mal über die Daten drüber um sie zu erlernen (wenn ich das richtig verstanden habe)
-num_topics = 5
-lda_model = LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics, passes=10)
+        for i in data:
+            # if type(i) is dict:
+            if isinstance(i, dict):
+                helpList = list()
+                helpDict = dict()
+                for e in i['paragraphs']:
+                    helpList.append(e)
+                texts = helpList
+                # print(text)
 
-# Ausgabe
-topics = lda_model.print_topics(num_words=5)
-for topic in topics:
-    print(topic)
+                # Tokenisierung und Vorbereitung vom Text
+                processed_texts = [simple_preprocess(text) for text in texts]
+                dictionary = corpora.Dictionary(processed_texts)
+                corpus = [dictionary.doc2bow(text) for text in processed_texts]
+
+                # Training des LDA-Modells
+                # Anzahl topics = 5 passes=10 also es ghet 10 Mal über die Daten drüber um sie zu erlernen
+                num_topics = 5
+                lda_model = LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics, passes=10)
+
+                # Ausgabe
+                tokens = list()
+                topics = lda_model.print_topics(num_words=5)
+                for topic in topics:
+                    #print(topic)
+                    tokens.append(topic[1])
+
+                helpDict['stud_url'] = i['stud_url']
+                helpDict['title'] = i['title']
+                helpDict['paragraphs'] = tokens
+
+                content.append(helpDict)
+
+            else:
+                print(f"Listenelement ist kein Dict: {type(i)}")
+    else:
+        print(f"{fname} ist keine gültige JSON.")
+
+    if content is not None:
+        write_json("../LDA/GensimOutput/" + os.path.basename(fname).split("_")[0] + "_gensim.json")
+    else:
+        print(f"Content is empty, something went wrong with: {fname}")
+
+
+def write_json(fname):
+    with open(fname, 'w') as f:
+        json.dump(content, f)
+        print(f"JSON Datei {fname} erfolgreich erstellt")
+
+
+for root, dirs, files in os.walk('../Resources/Cleaned'):
+    if root == "../Resources/Cleaned":
+        for file in files:
+            # check for json file
+            if (file.endswith('.json')):
+                fname = root + '/' + file
+                apply_lda(fname)
+            else:
+                print(f"{file} has no json extension.")
+    print("finished, no more json files")
