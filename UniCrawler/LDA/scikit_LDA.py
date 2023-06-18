@@ -5,8 +5,6 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-
-
 def apply_lda(fname):
     content = list()
     # open file
@@ -30,23 +28,21 @@ def apply_lda(fname):
                 for e in i['paragraphs']:
                     helpList.append(e)
                 text = helpList
-                # print(text)
 
-                # Vektorisierung des Textes
+                # vectorizing the text
                 vectorizer = CountVectorizer()
                 X = vectorizer.fit_transform(text)
 
-                # Training LDA-Modell
+                # initiate LDA-model
                 num_topics = 5
                 lda_model = LatentDirichletAllocation(n_components=num_topics)
                 lda_model.fit(X)
 
-                # Themen ausgeben
+                # print topics
                 feature_names = vectorizer.get_feature_names_out()
                 tokens = list()
                 for topic_idx, topic in enumerate(lda_model.components_):
                     top_words = [feature_names[i] for i in topic.argsort()[:-6:-1]]
-                    # print(f"Topic #{topic_idx + 1}: {', '.join(top_words)}")
                     tokens.append(', '.join(top_words))
 
                 helpDict['stud_url'] = i['stud_url']
@@ -56,9 +52,9 @@ def apply_lda(fname):
                 content.append(helpDict)
 
             else:
-                print(f"Listenelement ist kein Dict: {type(i)}")
+                print(f"Element is not a dict: {type(i)}")
     else:
-        print(f"{fname} ist keine gültige JSON.")
+        print(f"{fname} is not a valid JSON file.")
 
     if content is not None:
         write_json("../LDA/SkLearnOutput/" + os.path.basename(fname).split("_")[0] + "_sklearn.json", content)
@@ -69,9 +65,10 @@ def apply_lda(fname):
 def write_json(fname, content):
     with open(fname, 'w') as f:
         json.dump(content, f)
-        print(f"JSON Datei {fname} erfolgreich erstellt")
+        print(f"JSON file {fname} was generated.")
 
 
+# loads files from the following directory '../Resources/Cleaned'
 for root, dirs, files in os.walk('../Resources/Cleaned'):
     if root == "../Resources/Cleaned":
         for file in files:
