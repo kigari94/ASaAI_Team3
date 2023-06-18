@@ -3,13 +3,27 @@
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from UniCrawler.spiders import haw, htw, htwk, tuberlin, fhw, ul
+from UniCrawler.spiders import haw, htw, htwk, tuberlin, fhw, ul, uni
+
+unilist = ["htw,htw-dresden.de,https://www.htw-dresden.de,studium/vor-dem-studium/studienangebot",
+            "fhw,fh-wedel.de,https://www.fh-wedel.de,bewerben/bachelor"
+            ]
 
 def main():
     """ Main program """
     # Code goes over here.
     process = CrawlerProcess(get_project_settings())
 
+    # for elem in unilist:
+    #     name, domain, url, path = elem.split(",")
+    #
+    #     print(f"{name}")
+    #
+    #     uniSpider = uni.UniSpider
+    #
+    #     process.crawl(uniSpider(name,domain,url,path))
+    #     process.start()
+    #     uniSpider.write_json(uniSpider)
     #htwkSpider = htwk.HtwkSpider
     htwSpider = htw.HtwSpider
     #tuBerlinSpider = tuberlin.TuBerlinSpider

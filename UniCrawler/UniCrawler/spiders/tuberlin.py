@@ -33,7 +33,7 @@ class TuBerlinSpider(CrawlSpider):
         self.content.append(item)
 
     def write_json(self):
-        with open('tuberlinoutput.json', 'w') as f:
+        with open('Resources/tuberlinoutput.json', 'w') as f:
             json.dump(self.content, f)
 
 

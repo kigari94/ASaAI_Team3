@@ -6,6 +6,7 @@ from scrapy.item import Item, Field
 
 
 class FhwSpider(CrawlSpider):
+
     name = "fhw"
     allowed_domains = ["fh-wedel.de"]
     start_urls = ["https://www.fh-wedel.de"]
@@ -33,7 +34,7 @@ class FhwSpider(CrawlSpider):
         self.content.append(item)
 
     def write_json(self):
-        with open('fhwoutput.json', 'w') as f:
+        with open('Resources/fhwoutput.json', 'w') as f:
             json.dump(self.content, f)
 
 
