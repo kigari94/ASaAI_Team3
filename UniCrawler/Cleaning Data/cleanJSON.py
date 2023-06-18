@@ -88,7 +88,8 @@ def clean_json(fname):
 
                 # remove (Adverben, Determinante, ADP und Pronomen)
                 removable_tags = ['ADV', 'DET', 'ADP', 'PRON']
-                filtered_token = [token.text for token in doc if token.pos_ not in removable_tags]
+                filtered_tokens = [token.text for token in doc if token.pos_ not in removable_tags]
+                #print(filtered_tokens)
 
                 filtered_string = ' '.join(filtered_tokens)
                 filtered_doc = nlp(filtered_string)
