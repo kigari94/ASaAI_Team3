@@ -9,6 +9,7 @@ import spacy
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
+
 # # einmaliges Ausführen
 # nltk.download('punkt')
 # nltk.download('stopwords')
@@ -20,7 +21,7 @@ from nltk.corpus import stopwords
 # Laden deutschen Sprachmodells von Spacy
 nlp = spacy.load("de_core_news_sm")
 
-content = list()
+stopList = "additional_words.json"
 
 def clean_string(input):
     if input is not None:
@@ -33,6 +34,7 @@ def clean_string(input):
 
 
 def clean_json(fname):
+    content = list()
     # open file
     try:
         with open(fname) as f:
@@ -69,44 +71,14 @@ def clean_json(fname):
 
                 # StopWords sind Füllwörter
                 stop_words = set(stopwords.words("german"))
+                additional_words = list()
 
                 # Liste mit weiteren Wörtern die rausgefiltert werden
-                additional_words = ['innen', 'bitte', 'xa', 'prof', 'pdf', 'z', 'b', 'haw', 'oft', 'per', 'sowie',
-                                    'etc',
-                                    'uhr', 'ab', 'mo', 'di', 'mi', 'do', 'fr', 'sa', 'so', 'aktivieren', 'javascript',
-                                    'browser', 'og', 'angebotenxaneben', 'google', 'deutsch', 'deutsche', 'deutscher',
-                                    'deutschen', 'schule', 'unserer', 'homepage', 'ausland', 'ausländische',
-                                    'ausländischer', 'hzb', 'freitag', 'komplexen', 'zeugnis', 'studium',
-                                    'zwischenxaden', 'studiengangsleitung', 'besuchen',
-                                    'zumxabewerbungsverfahren', 'frist', 'montag', 'dienstag', 'mittwoch', 'donnerstag',
-                                    'studienbewerber', 'sächsisches', 'landesamt', 'semester', 'bewerbung', 'müssen',
-                                    'anerkennen', 'lassen', 'finden', 'voraussetzungen', 'begonnen', 'weiteren', 'gern',
-                                    'verfügen', 'entsprechenden', 'stelle', 'wohnort', 'rubrik', 'formgerecht',
-                                    'uniassist',
-                                    'ev', 'richten', 'erfüllung', 'allgemeinen', 'zulassungsvoraussetzungen', 'prüft',
-                                    'nutzung', 'youtube', 'betreiber', 'usan', 'übertragen', 'umständen',
-                                    'youtubevideos',
-                                    'abspielen', 'angeboten', 'benötigen', 'zulassung', 'neben', 'friedrichlistplatz',
-                                    'regel', 'nachzuweisen', 'hochschulzugangsberechtigung', 'hochschulabschluss',
-                                    'sprache', 'nachweis', 'sprachlichen', 'studierfähigkeit', 'befreit', 'nähere',
-                                    'deutschsprachigen', 'studiengangs', 'dh', 'xain', 'bewerbern', 'gleichgestellt',
-                                    'befolgen', 'sprechzeit', 'information', 'studiengang', 'but', 'please', 'use',
-                                    'translator', 'for', 'translated', 'version', 'wesentlichexakenntnisse',
-                                    'xaökonomie',
-                                    'möchten', 'bitten', 'anliegen', 'vorrangig', 'via', 'e', 'mail', 'telefonisch',
-                                    'stehen', 'weitere', 'familienbetriebegroß', 'unternehmen', 'dresden', 'alltag',
-                                    'persönliche', 'beratungsgespräche', 'weiteres', 'vorheriger', 'terminvereinbarung',
-                                    'weitere', 'dokumente', 'antragsformulare', 'informationen', 'link', 'aktualisiert',
-                                    'statt', 'aktuelle', 'sprechzeiten', 'studienfachberatung', 'selbststudium',
-                                    'email',
-                                    'studieren', 'zuxaplanen', 'gelerntes', 'vorlesung', 'sämtlicher', 'sämtliche',
-                                    'absolviert', 'somit', 'parallel', 'berufsabschluss', 'bereiten', 'späteren',
-                                    'beruflichen', 'einsatz', 'einemxaweitgefächerten', 'arbeitsmarkt', 'methodenxader',
-                                    'or', 'a', 'of', 'about', 'the', 'on', 'our', 'undxader', 'einzelnen', 'ebba',
-                                    'wintersemester', 'pillnitz', 'achelor', 'ihrxaproduktionstechnisches', 'and',
-                                    'ermöglichenxaihnen', 'beiden', 'studienrichtungen', 'drei',
-                                    'studiengangssekretariat',
-                                    'entscheidungenxain', 'dasxaerkennen', 'zuxaplane', 'campus']
+
+                with open(stopList) as f:
+                    additional_words = json.load(f)
+                    #print(additional_words)
+
                 stop_words.update(additional_words)
 
                 # legt neue Liste an mit gefilterten Wörtern
@@ -147,12 +119,12 @@ def clean_json(fname):
         print(f"{fname} ist keine gültige JSON.")
 
     if content is not None:
-        write_json("../Resources/Cleaned/" + os.path.basename(fname).split(".")[0] + "_cleaned.json")
+        write_json("../Resources/Cleaned/" + os.path.basename(fname).split(".")[0] + "_cleaned.json",  content)
     else:
         print(f"Content is empty, something went wrong with: {fname}")
 
 
-def write_json(fname):
+def write_json(fname, content):
     with open(fname, 'w') as f:
         json.dump(content, f)
         print(f"JSON Datei {fname} erfolgreich erstellt")

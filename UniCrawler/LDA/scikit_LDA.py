@@ -4,10 +4,11 @@ import json
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 
-content = list()
+
 
 
 def apply_lda(fname):
+    content = list()
     # open file
     try:
         with open(fname) as f:
@@ -60,12 +61,12 @@ def apply_lda(fname):
         print(f"{fname} ist keine gültige JSON.")
 
     if content is not None:
-        write_json("../LDA/SkLearnOutput/" + os.path.basename(fname).split("_")[0] + "_sklearn.json")
+        write_json("../LDA/SkLearnOutput/" + os.path.basename(fname).split("_")[0] + "_sklearn.json", content)
     else:
         print(f"Content is empty, something went wrong with: {fname}")
 
 
-def write_json(fname):
+def write_json(fname, content):
     with open(fname, 'w') as f:
         json.dump(content, f)
         print(f"JSON Datei {fname} erfolgreich erstellt")
