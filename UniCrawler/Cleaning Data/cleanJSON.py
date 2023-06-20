@@ -38,7 +38,7 @@ def clean_json(fname):
     content = list()
     # open file
     try:
-        with open(fname) as f:
+        with open(fname, encoding="utf8") as f:
             data = json.load(f)
 
     except Exception as e:
