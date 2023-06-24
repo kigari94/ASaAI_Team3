@@ -65,7 +65,8 @@ def apply_lda(fname):
         plt.xlabel('PCA Component 1')
         plt.ylabel('PCA Component 2')
         plt.title(fname)
-        # plt.legend(loc="best", shadow=False, scatterpoints=1)
+
+        # output
         output_dir = "./Plot"  # Specify the directory path
         os.makedirs(output_dir, exist_ok=True)
         filename = os.path.basename(fname)  # Get the base filename without the path
