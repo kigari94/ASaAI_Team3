@@ -25,9 +25,11 @@ def apply_lda(fname):
             if isinstance(i, dict):
                 helpList = list()
                 helpDict = dict()
+
                 for e in i['paragraphs']:
                     helpList.append(e)
                 text = helpList
+                # print(text)
 
                 # vectorizing the text
                 vectorizer = CountVectorizer()
@@ -51,10 +53,30 @@ def apply_lda(fname):
 
                 content.append(helpDict)
 
+
+
             else:
                 print(f"Element is not a dict: {type(i)}")
     else:
         print(f"{fname} is not a valid JSON file.")
+
+    # define term for filtering the courses
+    # depending on their title
+    term = "Studieng\u00e4nge"
+    i = 0
+
+    # get courses
+    for c in content:
+        # finding the title
+        value = c['title']
+        # check if title is empty
+        if value is not None:
+            # check if title contains term
+            if term in value:
+                print(content[i])
+                # delete wrong courses
+                del content[i]
+        i += 1
 
     if content is not None:
         write_json("../LDA/SkLearnOutput/" + os.path.basename(fname).split("_")[0] + "_sklearn.json", content)
