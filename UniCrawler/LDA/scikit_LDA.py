@@ -25,6 +25,7 @@ def apply_lda(fname):
             if isinstance(i, dict):
                 helpList = list()
                 helpDict = dict()
+
                 for e in i['paragraphs']:
                     helpList.append(e)
                 text = helpList
@@ -51,10 +52,36 @@ def apply_lda(fname):
 
                 content.append(helpDict)
 
+
+
             else:
                 print(f"Element is not a dict: {type(i)}")
     else:
         print(f"{fname} is not a valid JSON file.")
+
+    # defining terms for filtering the courses
+    # depending on their title
+    terms = {"Studieng\u00e4nge", "Bachelorstudieng\u00e4nge", "Studienangebot", "Masterabschluss", "Modulhandbücher",
+             "Colloquium", "Kolloquium", "Fachsemester"
+             }
+    i = 0
+    count = 0
+
+    # get courses
+    for c in content:
+        # finding the title
+        value = c['title']
+        # check if title is empty
+        if value is not None:
+            for term in terms:
+                # check if title contains term
+                if term in value:
+                    print('Deleting: ' + str(content[i]))
+                    # delete wrong courses
+                    del content[i]
+                    count += 1
+        i += 1
+    print('Deleted Objects: ' + str(count))
 
     if content is not None:
         write_json("../LDA/SkLearnOutput/" + os.path.basename(fname).split("_")[0] + "_sklearn.json", content)
