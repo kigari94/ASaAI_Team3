@@ -33,12 +33,59 @@ def clean_string(input):
     else:
         return ''
 
+def filter_noncourses(content):
+    # defining terms for filtering the courses
+    # depending on their title
+    terms = {"Studieng\u00e4nge", "ǀ Bachelorstudiengänge", "Bachelorstudiengänge", "Studienangebot", "Masterabschluss",
+             "Modulhandbücher", "Modulhandbuch", "ǀ Akademische Abschlüsse", "Abschlüsse", "Abschlüsse", "Colloquium",
+             "Kolloquium", "Fachsemester", "Prüfungsordnungen", "Weiterbildende Masterstudengänge", "Liste",
+             "Bewerbung_Verweis_Sommersemester", "Überblick", "International Office", "Studierenden-Vertretungen",
+             "Schnuppertage", "Studienfonds", "Wintersemester", "Bewerbungsportal", "SS 19", "WS 19", "SS 20", "WS 20",
+             "Studiengangsordnungen", "Warum"
+             }
+    count = 0
+
+    # get courses
+    for j, c in enumerate(content):
+        # finding the title
+        value = c['title']
+        # check if title is empty
+        if value is not None:
+            for term in terms:
+                # check if title contains term
+                if term in value:
+                    # print('Deleting: ' + str(term) + " Nummer: " + str(j) + " Value: " + str(
+                    #     value) + " from list: " + str(content[j]))
+                    # delete wrong courses
+                    del content[j]
+                    count += 1
+                    break
+    print('Deleted Objects: ' + str(count))
+
+def filter_duplicates(content):
+    memory = list()
+    count = 0
+
+    for j, c in enumerate(content):
+        # finding the title
+        value = c['title']
+        # check if title is empty
+        if value is not None:
+            # Check for duplicates
+            if value in memory:
+                # print(str(value) + " from list: " + str(content[j]))
+                # delete duplicates
+                del content[j]
+                count += 1
+            else:
+                memory.append(value)
+    print('Duplicates Removed: ' + str(count))
 
 def clean_json(fname):
     content = list()
     # open file
     try:
-        with open(fname) as f:
+        with open(fname, encoding="utf-8") as f:
             data = json.load(f)
 
     except Exception as e:
@@ -111,6 +158,9 @@ def clean_json(fname):
     else:
         print(f"{fname} is not a valid JSON.")
 
+    filter_noncourses(content)
+    filter_duplicates(content)
+
     if content is not None:
         write_json("../Resources/Cleaned/" + os.path.basename(fname).split(".")[0] + "_cleaned.json", content)
     else:
@@ -119,7 +169,7 @@ def clean_json(fname):
 
 def write_json(fname, content):
     with open(fname, 'w') as f:
-        json.dump(content, f)
+        json.dump(content, f, indent=4)
         print(f"JSON file {fname} created successfully")
 
 
