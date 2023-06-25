@@ -6,6 +6,10 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import PCA
 
+
+'''
+PCA und LDA Plotten aller Daten aus /Resources/Clean
+'''
 def apply_lda(fname):
     content = list()
     # open file
