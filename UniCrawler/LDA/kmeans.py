@@ -1,20 +1,15 @@
 import os
 import json
-import numpy as np
-import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
-from sklearn.metrics import pairwise_distances
-
-import nltk
-import string
-
 import matplotlib.pyplot as plt
 
-
-def apply_lda(fname):
+'''
+kmeans using TL-IDF, PCA and k-Means clustering
+'''
+def kmeans(fname):
     content = list()
     # open file
     try:
@@ -49,57 +44,37 @@ def apply_lda(fname):
         print(f"{fname} ist keine gültige JSON.")
 
     if content:
-        tf_idf_vectorizor = TfidfVectorizer(  # tokenizer = tokenize_and_stem,
-            max_features=20000)
+        # TF-IDF
+        tf_idf_vectorizor = TfidfVectorizer(max_features=20000)
         tf_idf = tf_idf_vectorizor.fit_transform(all_text)
         tf_idf_norm = normalize(tf_idf)
         tf_idf_array = tf_idf_norm.toarray()
 
-        # Training LDA-Modell
+        # PCA
         sklearn_pca = PCA(n_components=2)
         Y_sklearn = sklearn_pca.fit_transform(tf_idf_array)
 
-        # Create the k-means clustering model
-        kmeans_model = KMeans(n_clusters=2, max_iter=600, algorithm='lloyd')
+        # Create the k-means clustering model choose different cluster
+        kmeans_model = KMeans(n_clusters=25, max_iter=600, algorithm='lloyd')
         fitted = kmeans_model.fit(Y_sklearn)
         prediction = kmeans_model.predict(Y_sklearn)
 
         plt.scatter(Y_sklearn[:, 0], Y_sklearn[:, 1], c=prediction, s=50, cmap='viridis')
 
 
-        plt.xlabel('PCA Component 1')
-        plt.ylabel('PCA Component 2')
+        plt.xlabel('Component1')
+        plt.ylabel('Component2')
         plt.title(fname)
         output_dir = "./Plot/Kmeans"
         os.makedirs(output_dir, exist_ok=True)
         filename = os.path.basename(fname)
-        output_filename = os.path.join(output_dir, f"{filename}_kmeansplot2.png")
+        output_filename = os.path.join(output_dir, f"{filename}_kmeansplot.png")
         plt.savefig(output_filename)
         plt.close()
-
-        def get_top_features_cluster(tf_idf_array, prediction, n_feats):
-            labels = np.unique(prediction)
-            dfs = []
-            for label in labels:
-                id_temp = np.where(prediction == label)  # indices for each cluster
-                x_means = np.mean(tf_idf_array[id_temp], axis=0)  # returns average score across cluster
-                sorted_means = np.argsort(x_means)[::-1][:n_feats]  # indices with top 20 scores
-                features = tf_idf_vectorizor.get_feature_names_out()
-                best_features = [(features[i], x_means[i]) for i in sorted_means]
-                df = pd.DataFrame(best_features, columns=['features', 'score'])
-                dfs.append(df)
-            return dfs
-
-        dfs = get_top_features_cluster(tf_idf_array, prediction, 15)
 
     else:
         print(f"Content is empty, something went wrong with:{fname}")
 
-
-def write_json(fname, content):
-    with open(fname, 'w') as f:
-        json.dump(content, f)
-        print(f"JSON Datei {fname} erfolgreich erstellt")
 
 
 for root, dirs, files in os.walk('../Resources/Cleaned'):
@@ -108,7 +83,7 @@ for root, dirs, files in os.walk('../Resources/Cleaned'):
             # check for json file
             if (file.endswith('.json')):
                 fname = root + '/' + file
-                apply_lda(fname)
+                kmeans(fname)
             else:
                 print(f"{file} has no json extension.")
     print("finished, no more json files")

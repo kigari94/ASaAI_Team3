@@ -6,11 +6,12 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import PCA
 
-
 '''
 PCA und LDA Plotten aller Daten aus /Resources/Clean
 '''
-def apply_lda(fname):
+
+
+def plot(fname):
     content = list()
     # open file
     try:
@@ -45,7 +46,7 @@ def apply_lda(fname):
         print(f"{fname} ist keine gültige JSON.")
 
     if content:
-        # Vektorisierung des Textes
+        # Vectorizing the text
         vectorizer = CountVectorizer()
         X = vectorizer.fit_transform(all_text)
 
@@ -54,27 +55,26 @@ def apply_lda(fname):
         lda_model = LatentDirichletAllocation(n_components=num_topics)
         X_topics = lda_model.fit_transform(X)
 
-        # Dimensionalität reduzieren mit PCA
+        # dimension reduction with pca
         pca = PCA(n_components=2)
         X_pca = pca.fit_transform(X_topics)
 
         # Get the dominant topic for each document
         dominant_topics = np.argmax(X_topics, axis=1)
 
-        # Define colors for different topics
-        colors = ['red', 'blue', 'green', 'orange', 'purple']
-
         # Visualize the clusters
-        plt.scatter(X_pca[:, 0], X_pca[:, 1], c=[colors[i] for i in dominant_topics])
-        plt.xlabel('PCA Component 1')
-        plt.ylabel('PCA Component 2')
+        # if you want to run with PCA
+        # plt.scatter(X_pca[:, 0], X_pca[:, 1], c=dominant_topics)
+        plt.scatter(X_topics[:, 0], X_topics[:, 1], c=dominant_topics)
+        plt.xlabel('Component')
+        plt.ylabel('Component')
         plt.title(fname)
 
         # output
         output_dir = "./Plot"  # Specify the directory path
         os.makedirs(output_dir, exist_ok=True)
-        filename = os.path.basename(fname)  # Get the base filename without the path
-        output_filename = os.path.join(output_dir, f"{filename}_plot.png")
+        filename = os.path.basename(fname)
+        output_filename = os.path.join(output_dir, f"{filename}_LDAplot.png")
         plt.savefig(output_filename)
         plt.close()
 
@@ -82,22 +82,13 @@ def apply_lda(fname):
     else:
         print(f"Content is empty, something went wrong with: {fname}")
 
-
-def write_json(fname, content):
-    with open(fname, 'w') as f:
-        json.dump(content, f)
-        print(f"JSON Datei {fname} erfolgreich erstellt")
-
-
 for root, dirs, files in os.walk('../Resources/Cleaned'):
     if root == "../Resources/Cleaned":
         for file in files:
             # check for json file
             if (file.endswith('.json')):
                 fname = root + '/' + file
-                apply_lda(fname)
+                plot(fname)
             else:
                 print(f"{file} has no json extension.")
     print("finished, no more json files")
-
-
