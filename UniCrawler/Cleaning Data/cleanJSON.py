@@ -24,6 +24,7 @@ nlp = spacy.load("de_core_news_sm")
 # initiates the list with additional words to filter
 stopList = "additional_words.json"
 
+
 def clean_string(input):
     if input is not None:
         input = input.strip()
@@ -32,6 +33,7 @@ def clean_string(input):
         return lowercase_tokens
     else:
         return ''
+
 
 def filter_noncourses(content):
     # defining terms for filtering the courses
@@ -62,6 +64,7 @@ def filter_noncourses(content):
                     break
     print('Deleted Objects: ' + str(count))
 
+
 def filter_duplicates(content):
     memory = list()
     count = 0
@@ -80,6 +83,7 @@ def filter_duplicates(content):
             else:
                 memory.append(value)
     print('Duplicates Removed: ' + str(count))
+
 
 def clean_json(fname):
     content = list()
@@ -136,7 +140,7 @@ def clean_json(fname):
                 # remove (Adverben, Determinante, ADP und Pronomen)
                 removable_tags = ['ADV', 'DET', 'ADP', 'PRON', 'X', 'ADJ']
                 filtered_tokens = [token.text for token in doc if token.pos_ not in removable_tags]
-                #print(filtered_tokens)
+                # print(filtered_tokens)
 
                 filtered_string = ' '.join(filtered_tokens)
                 filtered_doc = nlp(filtered_string)
