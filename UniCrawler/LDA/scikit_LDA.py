@@ -25,6 +25,7 @@ def apply_lda(fname):
             if isinstance(i, dict):
                 helpList = list()
                 helpDict = dict()
+
                 for e in i['paragraphs']:
                     helpList.append(e)
                 text = helpList
