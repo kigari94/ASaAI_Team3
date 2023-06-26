@@ -1,17 +1,15 @@
 import os
 import json
-import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import normalize
+import matplotlib.pyplot as plt
 
 '''
-PCA und LDA Plotten aller Daten aus /Resources/Clean
+kmeans using TL-IDF, PCA and k-Means clustering
 '''
-
-
-def plot(fname):
+def kmeans(fname):
     content = list()
     # open file
     try:
@@ -46,41 +44,38 @@ def plot(fname):
         print(f"{fname} ist keine gültige JSON.")
 
     if content:
-        # Vectorizing the text
-        vectorizer = CountVectorizer()
-        X = vectorizer.fit_transform(all_text)
+        # TF-IDF
+        tf_idf_vectorizor = TfidfVectorizer(max_features=20000)
+        tf_idf = tf_idf_vectorizor.fit_transform(all_text)
+        tf_idf_norm = normalize(tf_idf)
+        tf_idf_array = tf_idf_norm.toarray()
 
-        # Training LDA-Modell
-        num_topics = 5
-        lda_model = LatentDirichletAllocation(n_components=num_topics)
-        X_topics = lda_model.fit_transform(X)
+        # PCA
+        sklearn_pca = PCA(n_components=2)
+        Y_sklearn = sklearn_pca.fit_transform(tf_idf_array)
 
-        # dimension reduction with pca
-        pca = PCA(n_components=2)
-        X_pca = pca.fit_transform(X_topics)
+        # Create the k-means clustering model choose different cluster
+        kmeans_model = KMeans(n_clusters=25, max_iter=600, algorithm='lloyd')
+        fitted = kmeans_model.fit(Y_sklearn)
+        prediction = kmeans_model.predict(Y_sklearn)
 
-        # Get the dominant topic for each document
-        dominant_topics = np.argmax(X_topics, axis=1)
+        plt.scatter(Y_sklearn[:, 0], Y_sklearn[:, 1], c=prediction, s=50, cmap='viridis')
 
-        # Visualize the clusters
-        # if you want to run with PCA
-        # plt.scatter(X_pca[:, 0], X_pca[:, 1], c=dominant_topics)
-        plt.scatter(X_topics[:, 0], X_topics[:, 1], c=dominant_topics)
-        plt.xlabel('Component')
-        plt.ylabel('Component')
+
+        plt.xlabel('Component1')
+        plt.ylabel('Component2')
         plt.title(fname)
-
-        # output
-        output_dir = "./Plot"  # Specify the directory path
+        output_dir = "./Plot/Kmeans"
         os.makedirs(output_dir, exist_ok=True)
         filename = os.path.basename(fname)
-        output_filename = os.path.join(output_dir, f"{filename}_LDAplot.png")
+        output_filename = os.path.join(output_dir, f"{filename}_kmeansplot.png")
         plt.savefig(output_filename)
         plt.close()
 
-
     else:
-        print(f"Content is empty, something went wrong with: {fname}")
+        print(f"Content is empty, something went wrong with:{fname}")
+
+
 
 for root, dirs, files in os.walk('../Resources/Cleaned'):
     if root == "../Resources/Cleaned":
@@ -88,7 +83,7 @@ for root, dirs, files in os.walk('../Resources/Cleaned'):
             # check for json file
             if (file.endswith('.json')):
                 fname = root + '/' + file
-                plot(fname)
+                kmeans(fname)
             else:
                 print(f"{file} has no json extension.")
     print("finished, no more json files")
