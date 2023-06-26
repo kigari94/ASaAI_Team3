@@ -1,18 +1,15 @@
-import os
-import json
+
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize, StandardScaler
-from sklearn.metrics import pairwise_distances
-
-import nltk
-import string
-
 import matplotlib.pyplot as plt
 
+'''
+trying to simulate ideal data and plot with kmeans
+'''
 content = [
     "web",
     "app", "games", "informatik", "programmieren", "vr", "ar", "entwicklung", "anwendung",
@@ -61,25 +58,5 @@ def plotPykMeans(content):
     plt.ylabel('PCA Component 2')
     plt.title("htw kmeans")
     plt.show()
-
-    # funktion bewertet top wörter in einem cluster und ballert die in n dataframe
-    # hier n bissche witzlos, weil alle wörter wichtig sind
-    # ist auch von einer Website, deren Tab ich geschlossen hab x_x
-    def get_top_features_cluster(tf_idf_array, prediction, n_feats):
-        labels = np.unique(prediction)
-        dfs = list()
-        for label in labels:
-            id_temp = np.where(prediction == label)  # indices for each cluster
-            x_means = np.mean(tf_idf_array[id_temp], axis=0)  # returns average score across cluster
-            sorted_means = np.argsort(x_means)[::-1][:n_feats]  # indices with top 20 scores
-            features = tf_idf_vectorizor.get_feature_names_out()
-            best_features = [(features[i], x_means[i]) for i in sorted_means]
-            df = pd.DataFrame(best_features, columns=['features', 'score'])
-            dfs.append(df)
-        return dfs
-
-    dfs = get_top_features_cluster(tf_idf_array, prediction, 20)
-    print(dfs, "ahhhhhhhh")
-
 
 plotPykMeans(content)
